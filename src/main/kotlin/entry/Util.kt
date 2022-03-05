@@ -1,5 +1,7 @@
 package entry
 
+import cn.hutool.core.util.StrUtil
+
 fun String.underscoreToCamel(): String {
     val names = this.split("_")
     val sb = StringBuilder()
@@ -31,7 +33,7 @@ fun String.makeTags(tpl: String): String {
     if (tpl.isEmpty()) {
         return ""
     }
-    return "    `" + tpl.replace("%s", this) + "`"
+    return "    `" + String.format(tpl, StrUtil.toCamelCase(this), this) + "`"
 }
 
 fun String.makeDaoFunc(): String {
