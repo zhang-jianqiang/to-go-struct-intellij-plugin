@@ -124,3 +124,34 @@ func (d *$dao) Delete(ctx context.Context, where string, args ...any) error {
 }
     """.trimIndent()
 }
+
+fun String.makeQueryFunc(): String {
+    val dao = this + "Dao"
+    return """
+func (d *$dao) Query(ctx context.Context, sql string, args ...any) ([]T, error) {
+    var results []T
+    if len(sql) == 0 {
+        return results, gorm.ErrInvalidData
+    }
+    if err := d.db.Raw(sql, args...).Scan(results).Error; err != nil {
+        return results, fmt.Errorf("$dao: Query sql=%s: %w", sql, err)
+    }
+    return results, nil
+}
+    """.trimIndent()
+}
+
+fun String.makeExecFunc(): String {
+    val dao = this + "Dao"
+    return """
+func (d *$dao) Exec(ctx context.Context, sql string, args ...any) error {
+    if len(sql) == 0 {
+        return gorm.ErrInvalidData
+    }
+    if err := d.db.Exec(sql, args...).Error; err != nil {
+        return fmt.Errorf("$dao: Exec sql=%s: %w", sql, err)
+    }
+    return nil
+}
+    """.trimIndent()
+}

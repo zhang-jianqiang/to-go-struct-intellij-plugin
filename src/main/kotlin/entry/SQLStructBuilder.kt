@@ -65,6 +65,8 @@ class SQLStructBuilder : Builder, Consumer<SQLColumnDefinition> {
             sb.append("\n\n").append(modelName.makeListFunc())
             sb.append("\n\n").append(modelName.makeUpdateFunc())
             sb.append("\n\n").append(modelName.makeDeleteFunc())
+            sb.append("\n\n").append(modelName.makeQueryFunc())
+            sb.append("\n\n").append(modelName.makeExecFunc())
         }
         return sb.toString()
     }
