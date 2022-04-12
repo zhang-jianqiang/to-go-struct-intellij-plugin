@@ -43,9 +43,9 @@ type $dao struct {
     m  *$this
 }
 
-func New$dao(ctx context.Context, db *gorm.DB) *$dao {
-	dao := &GroupDao{
-		m: &Group{},
+func New$dao() *$dao {
+	dao := &$dao{
+		m: &$this{},
 	}
 	return dao
 }
