@@ -133,9 +133,9 @@ func (d *$dao) Query(ctx context.Context, result any, sql string, args ...any) e
         return gorm.ErrInvalidData
     }
     if err := db.Raw(sql, args...).Scan(result).Error; err != nil {
-        return results, fmt.Errorf("$dao: Query sql=%s: %w", sql, err)
+        return fmt.Errorf("$dao: Query sql=%s: %w", sql, err)
     }
-    return results, nil
+    return nil
 }
     """.trimIndent()
 }
