@@ -40,14 +40,14 @@ fun String.makeDaoFunc(): String {
     val dao = this + "Dao"
     return """
 type $dao struct {
-    db *gorm.DB
     m  *$this
 }
 
 func New$dao(ctx context.Context, db *gorm.DB) *$dao {
-    dao := new($dao)
-    dao.db = db
-    return dao
+	dao := &GroupDao{
+		m: &Group{},
+	}
+	return dao
 }
     """.trimIndent()
 }
@@ -56,7 +56,7 @@ fun String.makeCreateFunc(): String {
     val dao = this + "Dao"
     return """
 func (d *$dao) Create(ctx context.Context, obj *$this) error {
-	err := d.db.Model(d.m).Create(&obj).Error
+	err := db.Model(d.m).Create(&obj).Error
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ fun String.makeUpdateFunc(): String {
     val dao = this + "Dao"
     return """
 func (d *$dao) Update(ctx context.Context, where string, update map[string]any, args ...any) error {
-    err := d.db.Model(d.m).Where(where, args...).
+    err := db.Model(d.m).Where(where, args...).
         Updates(update).Error
     if err != nil {
         return fmt.Errorf("$dao:Update where=%s: %w", where, err)
@@ -100,7 +100,7 @@ fun String.makeListFunc(): String {
     return """
 func (d *$dao) List(ctx context.Context, fields, where string, offset, limit int) ([]$this, error) {
     var results []$this
-    err := d.db.Model(d.m).
+    err := db.Model(d.m).
         Select(fields).Where(where).Offset(offset).Limit(limit).Find(&results).Error
     if err != nil {
         return nil, fmt.Errorf("$dao: List where=%s: %w", where, err)
@@ -117,7 +117,7 @@ func (d *$dao) Delete(ctx context.Context, where string, args ...any) error {
     if len(where) == 0 {
         return gorm.ErrMissingWhereClause
     }
-    if err := d.db.Where(where, args...).Update("status", 0).Error; err != nil {
+    if err := db.Where(where, args...).Update("status", 0).Error; err != nil {
         return fmt.Errorf("$dao: Delete where=%s: %w", where, err)
     }
     return nil
@@ -128,12 +128,11 @@ func (d *$dao) Delete(ctx context.Context, where string, args ...any) error {
 fun String.makeQueryFunc(): String {
     val dao = this + "Dao"
     return """
-func (d *$dao) Query(ctx context.Context, sql string, args ...any) ([]T, error) {
-    var results []T
+func (d *$dao) Query(ctx context.Context, result any, sql string, args ...any) error {
     if len(sql) == 0 {
-        return results, gorm.ErrInvalidData
+        return gorm.ErrInvalidData
     }
-    if err := d.db.Raw(sql, args...).Scan(results).Error; err != nil {
+    if err := db.Raw(sql, args...).Scan(result).Error; err != nil {
         return results, fmt.Errorf("$dao: Query sql=%s: %w", sql, err)
     }
     return results, nil
@@ -148,7 +147,7 @@ func (d *$dao) Exec(ctx context.Context, sql string, args ...any) error {
     if len(sql) == 0 {
         return gorm.ErrInvalidData
     }
-    if err := d.db.Exec(sql, args...).Error; err != nil {
+    if err := db.Exec(sql, args...).Error; err != nil {
         return fmt.Errorf("$dao: Exec sql=%s: %w", sql, err)
     }
     return nil
