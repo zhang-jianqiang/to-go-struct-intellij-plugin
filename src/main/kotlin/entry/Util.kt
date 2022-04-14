@@ -59,7 +59,7 @@ func (d *$dao) GetById(ctx context.Context, id int) ($this, error) {
 	var result $this
 	err := db.Take(&result, id).Error
 	return result, err
-}"""
+}""".trimIndent()
 }
 
 fun String.makeGetOneFunc(): String {
@@ -70,7 +70,7 @@ func (d *$dao) GetOne(ctx context.Context, where map[string]any) ($this, error) 
 	var result $this
 	err := db.Take(&result, where).Error
 	return result, err
-}"""
+}""".trimIndent()
 }
 
 fun String.makeListByIdsFunc(): String {
@@ -84,7 +84,7 @@ func (d *$dao) ListByIds(ctx context.Context, ids []int) ([]$this, error) {
 	}
 	err := db.Find(&result, ids).Error
 	return result, err
-}"""
+}""".trimIndent()
 }
 
 fun String.makeListByMapFunc(): String {
@@ -98,7 +98,7 @@ func (d *$dao) ListByMap(ctx context.Context, where map[string]any) ([]$this, er
 	}
 	err := db.Find(&result, where).Error
 	return result, err
-}"""
+}""".trimIndent()
 }
 
 fun String.makeSaveFunc(): String {
@@ -111,7 +111,7 @@ func (d *$dao) Save(ctx context.Context, obj *$this) error {
 		return err
 	}
 	return nil
-}"""
+}""".trimIndent()
 }
 
 fun String.makeSaveBatchFunc(): String {
@@ -124,7 +124,7 @@ func (d *$dao) SaveBatch(ctx context.Context, list []$this) error {
 		return err
 	}
 	return nil
-}"""
+}""".trimIndent()
 }
 
 fun String.makeUpdateFunc(): String {
