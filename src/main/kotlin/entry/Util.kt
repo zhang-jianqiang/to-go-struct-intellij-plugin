@@ -44,19 +44,69 @@ type $dao struct {
 }
 
 func New$dao() *$dao {
-	dao := &$dao{
+	return &$dao{
 		m: &$this{},
 	}
-	return dao
 }
     """.trimIndent()
 }
 
-fun String.makeCreateFunc(): String {
+fun String.makeGetByIdFunc(): String {
     val dao = this + "Dao"
     return """
-func (d *$dao) Create(ctx context.Context, obj *$this) error {
-	err := db.Model(d.m).Create(&obj).Error
+// GetById 根据 ID 查询
+func (d *$dao) GetById(ctx context.Context, id int) ($this, error) {
+	var result $this
+	err := db.Take(&result, id).Error
+	return result, err
+}"""
+}
+
+fun String.makeGetOneFunc(): String {
+    val dao = this + "Dao"
+    return """
+// GetOne 据 where 条件查询一条记录
+func (d *$dao) GetOne(ctx context.Context, where map[string]any) ($this, error) {
+	var result $this
+	err := db.Take(&result, where).Error
+	return result, err
+}"""
+}
+
+fun String.makeListByIdsFunc(): String {
+    val dao = this + "Dao"
+    return """
+// ListByIds 查询（根据ID 批量查询）
+func (d *$dao) ListByIds(ctx context.Context, ids []int) ([]$this, error) {
+	var result []$this
+	if len(ids) == 0 {
+		return result, errors.New("ListByIds：ids参数不能为空")
+	}
+	err := db.Find(&result, ids).Error
+	return result, err
+}"""
+}
+
+fun String.makeListByMapFunc(): String {
+    val dao = this + "Dao"
+    return """
+// ListByMap 根据 where 条件，查询全部记录
+func (d *$dao) ListByMap(ctx context.Context, where map[string]any) ([]$this, error) {
+	var result []$this
+	if len(where) == 0 {
+		return result, errors.New("ListByMap：where参数不能为空")
+	}
+	err := db.Find(&result, where).Error
+	return result, err
+}"""
+}
+
+fun String.makeSaveFunc(): String {
+    val dao = this + "Dao"
+    return """
+// Save 插入一条记录
+func (d *$dao) Save(ctx context.Context, obj *$this) error {
+	err := db.Create(obj).Error
 	if err != nil {
 		return err
 	}
@@ -64,61 +114,27 @@ func (d *$dao) Create(ctx context.Context, obj *$this) error {
 }"""
 }
 
+fun String.makeSaveBatchFunc(): String {
+    val dao = this + "Dao"
+    return """
+// SaveBatch 插入（批量）
+func (d *$dao) SaveBatch(ctx context.Context, list []$this) error {
+	err := db.Create(&list).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}"""
+}
 
 fun String.makeUpdateFunc(): String {
     val dao = this + "Dao"
     return """
+// Update 更新
 func (d *$dao) Update(ctx context.Context, where string, update map[string]any, args ...any) error {
-    err := db.Model(d.m).Where(where, args...).
-        Updates(update).Error
+    err := db.Model(d.m).Where(where, args...).Updates(update).Error
     if err != nil {
         return fmt.Errorf("$dao:Update where=%s: %w", where, err)
-    }
-    return nil
-}
-    """.trimIndent()
-}
-
-fun String.makeGetFunc(): String {
-    val dao = this + "Dao"
-    return """
-func (d *$dao) Get(ctx context.Context, fields, where string) (*$this, error) {
-    items, err := d.List(ctx, fields, where, 0, 1)
-    if err != nil {
-        return nil, fmt.Errorf("$dao: Get where=%s: %w", where, err)
-    }
-    if len(items) == 0 {
-        return nil, gorm.ErrRecordNotFound
-    }
-    return &items[0], nil
-}
-    """.trimIndent()
-}
-
-fun String.makeListFunc(): String {
-    val dao = this + "Dao"
-    return """
-func (d *$dao) List(ctx context.Context, fields, where string, offset, limit int) ([]$this, error) {
-    var results []$this
-    err := db.Model(d.m).
-        Select(fields).Where(where).Offset(offset).Limit(limit).Find(&results).Error
-    if err != nil {
-        return nil, fmt.Errorf("$dao: List where=%s: %w", where, err)
-    }
-    return results, nil
-}
-    """.trimIndent()
-}
-
-fun String.makeDeleteFunc(): String {
-    val dao = this + "Dao"
-    return """
-func (d *$dao) Delete(ctx context.Context, where string, args ...any) error {
-    if len(where) == 0 {
-        return gorm.ErrMissingWhereClause
-    }
-    if err := db.Where(where, args...).Update("status", 0).Error; err != nil {
-        return fmt.Errorf("$dao: Delete where=%s: %w", where, err)
     }
     return nil
 }
@@ -128,6 +144,7 @@ func (d *$dao) Delete(ctx context.Context, where string, args ...any) error {
 fun String.makeQueryFunc(): String {
     val dao = this + "Dao"
     return """
+// Query 原生 SQL 查询
 func (d *$dao) Query(ctx context.Context, result any, sql string, args ...any) error {
     if len(sql) == 0 {
         return gorm.ErrInvalidData
@@ -143,6 +160,7 @@ func (d *$dao) Query(ctx context.Context, result any, sql string, args ...any) e
 fun String.makeExecFunc(): String {
     val dao = this + "Dao"
     return """
+// Exec 原生 SQL 修改
 func (d *$dao) Exec(ctx context.Context, sql string, args ...any) error {
     if len(sql) == 0 {
         return gorm.ErrInvalidData

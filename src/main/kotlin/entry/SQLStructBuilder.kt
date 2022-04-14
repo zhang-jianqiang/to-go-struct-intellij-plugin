@@ -60,11 +60,13 @@ class SQLStructBuilder : Builder, Consumer<SQLColumnDefinition> {
         sb.append(tableReceiver(modelName, statement.name.simpleName))
         if (withCRUDs) {
             sb.append("\n\n").append(modelName.makeDaoFunc())
-            sb.append("\n\n").append(modelName.makeCreateFunc())
-            sb.append("\n\n").append(modelName.makeGetFunc())
-            sb.append("\n\n").append(modelName.makeListFunc())
+            sb.append("\n\n").append(modelName.makeGetByIdFunc())
+            sb.append("\n\n").append(modelName.makeGetOneFunc())
+            sb.append("\n\n").append(modelName.makeListByIdsFunc())
+            sb.append("\n\n").append(modelName.makeListByMapFunc())
+            sb.append("\n\n").append(modelName.makeSaveFunc())
+            sb.append("\n\n").append(modelName.makeSaveBatchFunc())
             sb.append("\n\n").append(modelName.makeUpdateFunc())
-            sb.append("\n\n").append(modelName.makeDeleteFunc())
             sb.append("\n\n").append(modelName.makeQueryFunc())
             sb.append("\n\n").append(modelName.makeExecFunc())
         }
