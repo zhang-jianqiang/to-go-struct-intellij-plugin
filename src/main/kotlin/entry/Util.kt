@@ -14,7 +14,8 @@ fun String.underscoreToCamel(): String {
 fun String.fmtName(): String {
     var name = this.clearName().firstToUpper()
     if (name.contains("_")) name = name.underscoreToCamel()
-    return name.replace("Id".toRegex(), "ID")
+    return name
+    // return name.replace("Id".toRegex(), "ID")
 }
 
 fun String.clearName() =
