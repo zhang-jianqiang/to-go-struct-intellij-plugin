@@ -72,7 +72,7 @@ fun String.makeGetOneFunc(): String {
 // GetOne 据 where 条件查询一条记录
 func (m *$dao) GetOne(ctx context.Context, where map[string]any) (*$this, error) {
 	var result $this
-	err := m.Db.Take(&result, where).Error
+	err := m.Db.Where(where).Take(&result).Error
     if err != nil {
         return nil, err
     }
@@ -103,7 +103,7 @@ func (m *$dao) ListByMap(ctx context.Context, where map[string]any) ([]$this, er
 	if len(where) == 0 {
 		return result, errors.New("ListByMap：where参数不能为空")
 	}
-	err := m.Db.Find(&result, where).Error
+	err := m.Db.Where(where).Find(&result).Error
 	return result, err
 }""".trimIndent()
 }
