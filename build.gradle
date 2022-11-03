@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'to-go=struct'
-version '1.1.1'
+version '1.1.2'
 sourceCompatibility = 1.8
 
 repositories {
@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation group: 'com.alibaba', name: 'druid', version: '1.1.16'
+    implementation group: 'com.alibaba', name: 'druid', version: '1.2.9'
     implementation group: 'org.json', name: 'json', version: '20200518'
     implementation 'cn.hutool:hutool-all:5.7.22'
 
