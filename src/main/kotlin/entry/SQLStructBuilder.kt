@@ -42,6 +42,15 @@ class SQLStructBuilder : Builder, Consumer<SQLColumnDefinition> {
         statement.forEachColumn(this)
         val sb = StringBuilder()
         val modelName = statement.name.simpleName.fmtName()
+        if (withCRUDs) {
+            sb.append("""import (
+	"context"
+	"errors"
+	"fmt"
+	"gorm.io/gorm"
+)""").append("\n\n")
+        }
+
         sb.append("type $modelName struct {\n")
         for (i in cols) {
             val tpe = i.dataType
