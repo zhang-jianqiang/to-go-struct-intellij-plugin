@@ -85,7 +85,7 @@ fun String.makeListByIdsFunc(): String {
     return """
 // ListByIds 查询（根据ID 批量查询）
 func (m *$dao) ListByIds(ctx context.Context, ids []int) ([]$this, error) {
-	var result []$this
+	result := make([]$this, 0)
 	if len(ids) == 0 {
 		return result, errors.New("ListByIds：ids参数不能为空")
 	}
@@ -99,7 +99,7 @@ fun String.makeListByMapFunc(): String {
     return """
 // ListByMap 根据 where 条件，查询全部记录
 func (m *$dao) ListByMap(ctx context.Context, where map[string]any) ([]$this, error) {
-	var result []$this
+	result := make([]$this, 0)
 	if len(where) == 0 {
 		return result, errors.New("ListByMap：where参数不能为空")
 	}
